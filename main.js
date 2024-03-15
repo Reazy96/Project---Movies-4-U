@@ -244,79 +244,85 @@ const movies = [
   ["Heat", "1995", "Michael Mann", "2h 50min", ["Action", "Crime", "Drama", "Thriller"], "8.2"],
   ["The Third Man", "1949", "Carol Reed", "1h 44min", ["Film-Noir", "Mystery", "Thriller"], "8.3"],
 ];
+// ! html
+const movieCollection = document.querySelector(".movie-box");
 
-// const movieBox = document.querySelector(".movie-box");
+movies.forEach((item) => {
+  movieCollection.innerHTML += `<div>
+  <h2>${item[0]}</h2>
+  <p>${item[1]}</p>
+  <p>${item[2]}</p>
+  <p>${item[3]}</p>
+  <ul>
+    ${item[4].map((genreItem) => `<li>${genreItem}</li>`).join(" ")}
+  </ul>
 
-// movies.forEach((element) => {
-//   let genre = element[4];
-
-//   element.splice(4, 1);
-//   movieBox.innerHTML += `<div><h2>${element[0]}</h2>`;
-//   movieBox.innerHTML += `<p>${element[1]}</p>`;
-//   movieBox.innerHTML += `<h3>${element[2]}</h3>`;
-//   movieBox.innerHTML += `<p>${element[3]}</p>`;
-
-//   genre.forEach((genr) => {
-//     movieBox.innerHTML += `<p>${genr}</p>`;
-//   });
-//   movieBox.innerHTML += `<p>${element[4]}</p></div>`;
-// });
-
-const movieBox = document.querySelector(".movie-box");
-
-// eine leere variable für den aufbau um es später in die movie box einzufügen
-let moviesHTML = "";
-
-// schleife durch alle Filme und jedes array heisst jetzt "element"
-movies.forEach((element) => {
-  // genre in eine variable gespeichert
-  let genre = element[4];
-  // die genre aus dem array rausgeholt
-  element.splice(4, 1);
-
-  // aufbau wie es im html sein soll
-  moviesHTML += `<div><h2>${element[0]}</h2>`;
-  moviesHTML += `<p>${element[1]}</p>`;
-  moviesHTML += `<h3>${element[2]}</h3>`;
-  moviesHTML += `<p>${element[3]}</p>`;
-
-  // eine schleife auf das genre array
-  genre.forEach((genr) => {
-    moviesHTML += `<p>${genr}</p>`;
-  });
-  // jetzt die werte des arrays einfügen
-  moviesHTML += `<p>${element[4]}</p></div>`;
+  <p>${item[5]}</p>
+                               </div>`;
 });
 
-// fügt die filme in die movieBox ein
-movieBox.innerHTML = moviesHTML;
-// !---------------------------------------------
-// suchfunktion
-function searchFunction() {
-  const searchInput = document.querySelector("#search-input").value.toLowerCase();
+// ! sort
+const yearUp = document.querySelector(".year-up");
+const yearDown = document.querySelector(".year-down");
+const rate = document.querySelector(".best-rate");
 
-  // Variable die eine schleife durch meine filme macht und der titel mit dem input übereinstimmt
-  const filteredMovies = movies.filter((movie) => movie[0].toLowerCase().includes(searchInput));
+yearUp.addEventListener("click", () => {
+  sort("up");
+});
 
-  // gleicher Aufbau wie oben nur in neuen variablen um die gefilterte seite neu zu laden
+yearDown.addEventListener("click", () => {
+  sort("down");
+});
 
-  let filteredMoviesHTML = "";
+rate.addEventListener("click", () => {
+  sort("rate");
+});
 
-  filteredMovies.forEach((element) => {
-    const genre2 = element[4];
-    element.splice(4, 1);
+const sort = (sort) => {
+  let sortetMovies = [];
 
-    filteredMoviesHTML += `<div><h2>${element[0]}</h2>`;
-    filteredMoviesHTML += `<p>${element[1]}</p>`;
-    filteredMoviesHTML += `<h3>${element[2]}</h3>`;
-    filteredMoviesHTML += `<p>${element[3]}</p>`;
+  if (sort === "up") {
+    sortetMovies = movies.sort((a, b) => a[1] - b[1]);
+  } else if (sort === "down") {
+    sortetMovies = movies.sort((a, b) => b[1] - a[1]);
+  } else if (sort === "rate") {
+    sortetMovies = movies.sort((a, b) => b[5] - a[5]);
+  }
 
-    genre2.forEach((genr) => {
-      filteredMoviesHTML += `<p>${genr}</p>`;
-    });
+  updateFunc(sortetMovies);
+};
+// ! Update
 
-    filteredMoviesHTML += `<p>${element[4]}</p></div>`;
+const updateFunc = (movie) => {
+  // erst reguläre strtseite löschen
+  movieCollection.innerHTML = "";
+
+  // neuen inhalt einfügen
+  movie.forEach((item) => {
+    movieCollection.innerHTML += `<div>
+    <h2>${item[0]}</h2>
+    <p>${item[1]}</p>
+    <p>${item[2]}</p>
+    <p>${item[3]}</p>
+    <ul>
+      ${item[4].map((genreItem) => `<li>${genreItem}</li>`).join(" ")}
+    </ul>
+  
+    <p>${item[5]}</p>
+                                 </div>`;
+  });
+};
+
+// !suchfunktion/filter
+
+const searchBtn = document.querySelector("#search-btn");
+
+search.addEventListener(click, () => {
+  const searchInput = document.querySelector("#search-input").value;
+
+  const searchedMovies = movies.filter((item) => {
+    return item[0].toLowerCase().includes(searchInput.toLowerCase());
   });
 
-  movieBox.innerHTML = filteredMoviesHTML;
-}
+  searchedMovies.length <= 0 ? (movieCollection.innerHTML = "Kein Film gefunden") : updateFunc(searchedMovies);
+});
